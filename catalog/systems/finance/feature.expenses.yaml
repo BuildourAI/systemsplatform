@@ -1,0 +1,102 @@
+id: finance.feature.expenses
+kind: feature
+system: finance
+name: Expenses and claims
+tagline: Record what you spend and let staff claim what they paid for
+description: >
+  Capture a bill by photographing it, put it under a category, and get it approved. Staff claim
+  what they paid out of pocket and see when they will be reimbursed. At the end of the month
+  everything is in one place instead of in a drawer.
+tier: core
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: claim_flow
+    label: Do staff claim expenses they paid themselves?
+    chip: "Staff can claim expenses"
+    type: boolean
+    default: true
+
+  - key: approval
+    label: Who signs off on an expense?
+    type: select
+    choices:
+      - { value: owner, label: Always me }
+      - { value: manager, label: A manager }
+      - { value: two_step, label: Manager first, then me }
+      - { value: threshold, label: Only above a certain amount }
+      - { value: none, label: Nobody, we just record it }
+    default: owner
+
+  - key: approval_threshold
+    label: Above what amount does it need approval?
+    chip: "Approval above"
+    type: currency
+    default: 5000
+    show_if: options.approval == "threshold"
+
+  - key: receipt_capture
+    label: How do receipts get in?
+    type: multiselect
+    choices:
+      - { value: photo, label: Photo from a phone }
+      - { value: upload, label: File upload }
+      - { value: email_forward, label: Forward the email to a special address }
+    default: [photo, upload]
+
+  - key: categories
+    label: How do you want spending grouped?
+    type: select
+    choices:
+      - { value: standard, label: Standard set, hint: Travel, software, rent, salaries, supplies }
+      - { value: custom, label: My own list, described below }
+    default: standard
+
+  - key: mileage
+    label: Do you reimburse travel by distance?
+    chip: "Mileage reimbursed"
+    type: boolean
+    default: false
+
+free_text:
+  - key: categories_list
+    prompt: What spending categories do you use?
+    placeholder: e.g. Client entertainment, Studio rent, Freelancer fees, Software, Travel
+  - key: special_rules
+    prompt: Anything specific about how expenses work here?
+    placeholder: e.g. anything over 25,000 needs a quote attached, fuel bills need the vehicle number
+
+dependencies:
+  requires: []
+  recommends: [finance.agent.expense-checker, finance.report.monthly-pl]
+  conflicts: []
+
+build:
+  entities:
+    - { name: Expense, fields: [date, category, amount, tax_amount, vendor, paid_by, status, receipt_url, notes] }
+    - { name: ExpenseCategory, fields: [name, code, active] }
+    - { name: Claim, fields: [claimant_id, expense_ids, total, status, submitted_on, reimbursed_on] }
+  screens:
+    - Expense list with filters by category, person and month
+    - Add expense with receipt capture
+    - Claim submission and status for staff
+    - Approval queue for whoever approves
+  workflows: [submit-claim, approve-expense, reject-expense, mark-reimbursed]
+  acceptance:
+    - A photographed receipt becomes an expense with the amount recorded
+    - An expense below the approval threshold skips approval; above it does not
+    - A staff member sees only their own claims, not everyone's
+    - Reimbursed claims stop appearing in the outstanding list
+  spec_md: |
+    ## Expenses and claims
+
+    Approval: **{{options.approval}}**{{#options.approval_threshold}}, above
+    {{options.approval_threshold}}{{/options.approval_threshold}}.
+    Receipts arrive by: **{{options.receipt_capture}}**.
+    Staff claims: {{options.claim_flow}}. Mileage: {{options.mileage}}.
+
+    Categories: {{options.categories}}. {{free_text.categories_list}}
+
+    ### Owner's specific requirements
+    {{free_text.special_rules}}

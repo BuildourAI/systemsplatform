@@ -1,0 +1,55 @@
+id: crm.dashboard.pipeline-health
+kind: dashboard
+system: crm
+name: Pipeline health
+tagline: What is likely to land, and what has gone quiet
+description: >
+  The sales picture on one screen. What is in play and what it is worth, what is likely to close
+  this month, what has gone stale, and where your best enquiries actually come from.
+tier: standard
+domains: [agencies, services, manufacturing]
+effort_points: 3
+
+options:
+  - key: period
+    label: What period?
+    type: select
+    choices:
+      - { value: this_month, label: This month }
+      - { value: this_quarter, label: This quarter }
+      - { value: rolling_90_days, label: Rolling 90 days }
+    default: this_month
+  - key: by_person
+    label: Break it down by salesperson?
+    chip: "Split by salesperson"
+    type: boolean
+    default: false
+  - key: source_analysis
+    label: Show which lead sources actually convert?
+    chip: "Shows what converts"
+    type: boolean
+    default: true
+  - key: who_can_see
+    label: Who can open it?
+    type: select
+    choices:
+      - { value: owner_only, label: Only me }
+      - { value: sales_team, label: The whole sales team }
+    default: owner_only
+
+free_text:
+  - key: extra_numbers
+    prompt: Any number you check regularly that should be here?
+    placeholder: e.g. how many enquiries we got this week compared to last
+
+dependencies:
+  requires: [crm.feature.pipeline]
+  recommends: []
+  conflicts: []
+
+build:
+  screens: [Pipeline health dashboard]
+  acceptance:
+    - Dashboard figures match the pipeline board for the same period
+    - Source conversion counts only deals that actually closed
+    - Someone without permission cannot reach it by any route

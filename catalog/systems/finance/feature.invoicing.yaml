@@ -1,0 +1,130 @@
+id: finance.feature.invoicing
+kind: feature
+system: finance
+name: Invoicing
+tagline: Create, send and track invoices
+description: >
+  Make an invoice in under a minute, send it by email or WhatsApp, and see at a glance who has
+  paid and who has not. Handles taxes, part payments and credit notes.
+tier: core
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 5
+
+options:
+  - key: numbering
+    label: How should invoices be numbered?
+    type: select
+    choices:
+      - { value: sequential, label: "Simple: 1, 2, 3..." }
+      - { value: yearly_prefix, label: "By year: 2026-001, 2026-002..." }
+      - { value: per_customer, label: "Per customer: ACME-001, ACME-002..." }
+      - { value: custom, label: "My own pattern (describe it below)" }
+    default: sequential
+
+  - key: taxes
+    label: Which taxes go on your invoices?
+    type: multiselect
+    choices:
+      - { value: gst, label: GST }
+      - { value: vat, label: VAT }
+      - { value: sales_tax, label: Sales tax }
+      - { value: none, label: No tax }
+    default: [gst]
+
+  - key: send_channels
+    label: How do you send invoices?
+    type: multiselect
+    choices: [email, whatsapp, download_pdf, print]
+    default: [email, whatsapp]
+
+  - key: part_payments
+    label: Do customers pay in instalments?
+    chip: "Part payments allowed"
+    type: boolean
+    default: true
+
+  - key: multi_currency
+    label: Do you invoice in more than one currency?
+    chip: "More than one currency"
+    type: boolean
+    default: false
+
+  - key: recurring
+    label: Do you have invoices that repeat every month?
+    chip: "Repeating invoices"
+    type: boolean
+    default: true
+    show_if: system.invoice_cadence in ["monthly_retainer", "mixed"]
+
+free_text:
+  - key: special_rules
+    prompt: Anything specific about how your invoices must work?
+    placeholder: >
+      e.g. GST breakdown per line, a UPI QR code on every invoice, our PO number in the header,
+      terms of 15 days for retainer clients and 30 for projects
+
+  - key: fields_we_need
+    prompt: Any extra information you need on an invoice that most businesses don't?
+    placeholder: e.g. site address, vehicle number, batch number
+
+dependencies:
+  requires: []
+  recommends:
+    - finance.doc_template.invoice-pdf
+    - finance.agent.invoice-reminders
+    - finance.dashboard.cash-flow
+  conflicts: []
+
+build:
+  entities:
+    - name: Customer
+      fields: [name, email, phone, billing_address, tax_id, payment_terms_days, currency]
+    - name: Invoice
+      fields: [number, customer_id, issue_date, due_date, status, currency, subtotal, tax_total, total, notes]
+    - name: InvoiceLine
+      fields: [invoice_id, description, quantity, unit_price, tax_rate, line_total]
+    - name: Payment
+      fields: [invoice_id, amount, paid_on, method, reference]
+    - name: CreditNote
+      fields: [invoice_id, amount, reason, issued_on]
+
+  screens:
+    - Invoice list with filters for unpaid, overdue and paid
+    - Invoice editor with line items and live totals
+    - Invoice detail with payment history and send button
+    - Customer list and customer detail with their invoice history
+
+  workflows:
+    - send-invoice
+    - record-payment
+    - issue-credit-note
+    - mark-overdue
+
+  acceptance:
+    - Can create an invoice with multiple line items and see correct totals including tax
+    - Invoice numbers follow the chosen numbering scheme with no gaps or duplicates
+    - A sent invoice cannot be silently edited; corrections happen via a credit note
+    - Recording a part payment leaves the correct balance outstanding
+    - The invoice list correctly separates unpaid, overdue and paid
+
+  spec_md: |
+    ## Invoicing
+
+    Numbering scheme: **{{options.numbering}}**.
+    Taxes applied: **{{options.taxes}}**.
+    Sent via: **{{options.send_channels}}**.
+    Part payments: {{options.part_payments}}. Multiple currencies: {{options.multi_currency}}.
+    Recurring invoices: {{options.recurring}}.
+
+    The owner bills **{{system.invoice_cadence}}**.
+
+    ### Owner's specific requirements
+    {{free_text.special_rules}}
+
+    ### Extra fields needed
+    {{free_text.fields_we_need}}
+
+    ### Rules
+    - An invoice moves through draft, sent, part-paid, paid, overdue, cancelled.
+    - Once sent, the invoice is immutable. Corrections are credit notes.
+    - Overdue is calculated from the customer's payment terms, defaulting to 30 days.

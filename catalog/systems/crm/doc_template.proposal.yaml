@@ -1,0 +1,58 @@
+id: crm.doc_template.proposal
+kind: doc_template
+system: crm
+name: Proposal document
+tagline: The document that wins the work
+description: >
+  Your proposal, laid out properly: what you understood, what you will do, what it costs and what
+  happens next. Built from the quote so the numbers never disagree.
+tier: standard
+domains: [agencies, services, manufacturing]
+effort_points: 3
+
+options:
+  - key: sections
+    label: What should a proposal include?
+    type: multiselect
+    choices:
+      - { value: understanding, label: What we understood you need }
+      - { value: approach, label: How we will do it }
+      - { value: timeline, label: Timeline }
+      - { value: pricing, label: Pricing }
+      - { value: team, label: Who will work on it }
+      - { value: case_studies, label: Similar work we have done }
+      - { value: terms, label: Terms and conditions }
+      - { value: next_steps, label: What happens next }
+    default: [understanding, approach, timeline, pricing, terms, next_steps]
+  - key: format
+    label: How do you send it?
+    type: select
+    choices:
+      - { value: pdf, label: A PDF }
+      - { value: web_page, label: A web page they open in a browser }
+      - { value: both, label: Both }
+    default: pdf
+  - key: e_signature
+    label: Let them sign it online?
+    chip: "Signed online"
+    type: boolean
+    default: false
+
+free_text:
+  - key: boilerplate
+    prompt: What text is the same on every proposal?
+    placeholder: e.g. our standard terms, our about-us paragraph, our payment schedule
+  - key: brand_notes
+    prompt: Anything about how it should look?
+    placeholder: e.g. use our brand font, cover page with the client's logo next to ours
+
+dependencies:
+  requires: [crm.feature.quotes]
+  recommends: []
+  conflicts: []
+
+build:
+  acceptance:
+    - Prices on the proposal match the quote record exactly
+    - The document opens correctly on a phone
+    - Revising the quote regenerates the proposal rather than leaving a stale one

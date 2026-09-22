@@ -1,0 +1,25 @@
+id: core.data_location.sheets
+kind: data_location
+system: core
+name: Google Sheets
+tagline: Familiar, and you can open it yourself
+description: >
+  Your data lives in Google Sheets. You can open it, sort it and share it like any spreadsheet.
+  Best when you are small and want to keep one foot in what you know. It will slow down past a
+  few thousand rows, and it is easier for someone to change something by accident.
+tier: standard
+effort_points: 2
+options:
+  - key: sharing
+    label: Who should be able to open the sheet directly?
+    type: select
+    choices:
+      - { value: owner_only, label: Only me }
+      - { value: finance_team, label: Me and whoever handles the money }
+    default: owner_only
+free_text: []
+dependencies: { requires: [], recommends: [], conflicts: [core.data_location.supabase, core.data_location.airtable] }
+build:
+  acceptance:
+    - The system reads and writes the sheet without corrupting existing rows
+    - The owner is warned in writing about the row limit and the accident risk

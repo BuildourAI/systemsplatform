@@ -1,0 +1,94 @@
+id: finance.agent.expense-checker
+kind: agent
+system: finance
+name: Expense checking teammate
+tagline: Reads receipts, sorts them, and flags what looks odd
+description: >
+  Reads every receipt as it arrives, pulls out the amount, date, vendor and tax, and files it under
+  the right category. Flags anything that looks like a duplicate, a personal spend, or a number
+  that does not match the receipt. It never approves anything itself.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: autofile_confidence
+    label: When should it file an expense without asking?
+    type: select
+    choices:
+      - { value: never, label: Never, always show me first }
+      - { value: high, label: When it is confident, hint: Recommended }
+      - { value: always, label: Always, I will check later }
+    default: high
+  - key: flag_duplicates
+    label: Watch for the same receipt claimed twice?
+    chip: "Watches for duplicates"
+    type: boolean
+    default: true
+  - key: flag_unusual
+    label: Flag spending that looks out of the ordinary?
+    chip: "Flags unusual spending"
+    type: boolean
+    default: true
+  - key: unusual_threshold
+    label: What counts as unusually large?
+    chip: "Unusual above"
+    type: currency
+    default: 25000
+    show_if: options.flag_unusual == true
+  - key: missing_receipt_chase
+    label: Chase staff for missing receipts?
+    chip: "Chases missing receipts"
+    type: boolean
+    default: true
+
+free_text:
+  - key: category_hints
+    prompt: Anything that helps it file things correctly?
+    placeholder: e.g. anything from Blue Dart is courier, anything from Zomato on a weekday is client lunch
+  - key: watch_for
+    prompt: Anything you specifically want it watching for?
+    placeholder: e.g. fuel bills without a vehicle number, any spend at our competitor's shop
+
+dependencies:
+  requires: [finance.feature.expenses]
+  recommends: [finance.report.monthly-pl]
+  conflicts: []
+
+agent:
+  reports_to: owner
+  triggers:
+    - { type: event, value: a receipt is uploaded }
+    - { type: schedule, value: weekly on Friday at 16:00 local time }
+  permissions:
+    read: [Expense, ExpenseCategory, Claim, Supplier]
+    write: [ExpenseDraft, ExpenseFlag]
+    never: [Expense, Claim, SupplierPayment]
+    external: "None. It works only inside the system."
+  guardrails:
+    - Never approve, reject or reimburse anything. Only the named approver does that.
+    - Never change an expense that has already been approved.
+    - If the amount on the receipt and the amount claimed differ, flag it and change neither.
+    - If a receipt is unreadable, say so. Never guess an amount.
+    - Never assume a spend is personal. Flag it as a question, not an accusation.
+  tools_needed: [ocr]
+  playbook_md: |
+    ## Playbook
+
+    When a receipt arrives:
+    1. Read the vendor, date, amount, tax and payment method from it.
+    2. If anything is unreadable, flag it for the person who uploaded it and stop.
+    3. Suggest a category, using the owner's hints: {{free_text.category_hints}}
+    4. Filing confidence setting is **{{options.autofile_confidence}}**. Follow it exactly.
+    5. Check for a receipt already claimed with the same vendor, date and amount. Flag a possible
+       duplicate rather than rejecting it.
+    6. Flag anything the owner asked you to watch for: {{free_text.watch_for}}
+
+    Every Friday:
+    - List expenses with no receipt attached and remind whoever recorded them.
+    - Give the owner a short summary: what came in, what is flagged, what is still missing.
+  acceptance:
+    - A clear receipt produces the correct amount, date and vendor
+    - The same receipt uploaded twice is flagged as a possible duplicate
+    - An unreadable receipt is flagged, never guessed at
+    - No expense is ever approved or reimbursed by the teammate

@@ -1,0 +1,22 @@
+id: core.data_location.airtable
+kind: data_location
+system: core
+name: Airtable
+tagline: A friendly middle ground
+description: >
+  Your data lives in Airtable. Nicer to look at than a spreadsheet and sturdier than one, with
+  views and filters you can change yourself. Costs money per user as your team grows.
+tier: standard
+effort_points: 2
+options:
+  - key: existing_base
+    label: Do you already use Airtable?
+    chip: "Uses an existing base"
+    type: boolean
+    default: false
+free_text: []
+dependencies: { requires: [], recommends: [], conflicts: [core.data_location.supabase, core.data_location.sheets] }
+build:
+  acceptance:
+    - The system works within Airtable's rate limits without losing writes
+    - The owner is told what it will cost as their team grows

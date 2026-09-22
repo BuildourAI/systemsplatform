@@ -1,0 +1,26 @@
+id: core.deployment_target.vercel
+kind: deployment_target
+system: core
+name: Hosted for you
+tagline: A web address that just works
+description: >
+  Your system lives at a web address you and your team open in a browser. Nothing to install,
+  works on phones, and there is no server for you to look after. Free to start.
+tier: core
+effort_points: 1
+options:
+  - key: custom_domain
+    label: Do you want your own web address?
+    chip: "Your own web address"
+    type: boolean
+    default: false
+    help: Something like systems.yourbusiness.com rather than a long default address.
+free_text:
+  - key: domain_notes
+    prompt: What address would you like?
+    placeholder: e.g. finance.acmedesign.in
+dependencies: { requires: [], recommends: [], conflicts: [core.deployment_target.own_server] }
+build:
+  acceptance:
+    - The owner can open the system on a phone and a laptop
+    - The address works without anyone needing to start anything

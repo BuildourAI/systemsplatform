@@ -1,0 +1,59 @@
+id: finance.feature.supplier-payments
+kind: feature
+system: finance
+name: Supplier payments
+tagline: Know what you owe and when it is due
+description: >
+  Record supplier bills as they arrive, see everything due this week, and mark what you have paid.
+  Stops the awkward call about an invoice from three months ago.
+tier: standard
+domains: [retail, manufacturing, services, agencies]
+effort_points: 4
+
+options:
+  - key: approval_required
+    label: Does a bill need approving before payment?
+    chip: "Bills need approving"
+    type: boolean
+    default: true
+  - key: payment_runs
+    label: Do you pay suppliers in batches?
+    type: select
+    choices:
+      - { value: weekly, label: Yes, a weekly payment run }
+      - { value: fortnightly, label: Yes, every two weeks }
+      - { value: monthly, label: Yes, monthly }
+      - { value: ad_hoc, label: No, we pay as they come }
+    default: ad_hoc
+  - key: early_payment_discounts
+    label: Do any suppliers give you a discount for paying early?
+    chip: "Early payment discounts"
+    type: boolean
+    default: false
+  - key: advance_payments
+    label: Do you pay some suppliers in advance?
+    chip: "Some suppliers paid in advance"
+    type: boolean
+    default: false
+
+free_text:
+  - key: special_rules
+    prompt: Anything specific about how you pay suppliers?
+    placeholder: e.g. our main material supplier is 45 day terms, freelancers are paid within 7 days
+
+dependencies:
+  requires: []
+  recommends: [finance.report.monthly-pl, finance.dashboard.cash-flow]
+  conflicts: []
+
+build:
+  entities:
+    - { name: Supplier, fields: [name, contact, payment_terms_days, tax_id, bank_details, notes] }
+    - { name: SupplierBill, fields: [supplier_id, bill_number, date, due_date, amount, tax_amount, status, attachment_url] }
+    - { name: SupplierPayment, fields: [bill_id, amount, paid_on, method, reference] }
+  screens: [Supplier list, Bills due this week, Bill entry, Payment run]
+  workflows: [record-bill, approve-bill, pay-bill, schedule-payment-run]
+  acceptance:
+    - Bills due this week are correct against each supplier's own terms
+    - A part payment against a bill leaves the right balance
+    - An unapproved bill cannot be marked paid when approval is required

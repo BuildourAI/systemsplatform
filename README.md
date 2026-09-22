@@ -31,3 +31,31 @@ Concrete examples that make the model real:
 
 - [`docs/examples/catalog/`](docs/examples/catalog/) sample catalog entries (a system, a feature, an agent, an automation)
 - [`docs/examples/output-package/`](docs/examples/output-package/) a sample of what a buyer receives
+
+## The prototype
+
+A clickable prototype of the shopping experience. No database, no accounts, no payments: the cart
+lives in the browser and the downloaded package is assembled client-side from the buyer's actual
+choices.
+
+```bash
+npm install
+npm run dev      # validates the catalog, then starts the app on :3000
+npm test         # dependency and condition logic
+npm run build    # production build
+```
+
+Walk it: landing → a system → configure something → cart → review → download. Add the invoice
+reminder teammate *without* Invoicing to see the dependency warning and its one-click fixes.
+
+### Layout
+
+| Path | What it is |
+|------|-----------|
+| `catalog/` | The catalog as YAML. The source of truth, validated on every build. |
+| `packages/catalog/` | Schemas, the YAML loader, dependency warnings and `show_if` conditions. Phase 1 reuses all of it server-side. |
+| `apps/web/` | The Next.js app: buyer flow today, admin later. |
+
+Catalog changes need no code change. Edit the YAML, and `npm run catalog:build` validates it and
+regenerates what the app reads. A broken reference or a missing field fails the build with a
+message naming the file.

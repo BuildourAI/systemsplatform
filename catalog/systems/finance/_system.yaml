@@ -1,0 +1,73 @@
+id: finance
+name: Finance
+tagline: Invoices out, money in, and a clear view of your cash
+description: >
+  Everything to bill customers, chase payment, track what you spend, and know where you stand.
+  Hands clean numbers to your accountant instead of a shoebox of receipts.
+status: live
+domains: [agencies, retail, services, clinics, manufacturing]
+use_cases: [finance]
+icon: wallet
+
+questions:
+  - key: invoice_cadence
+    label: How do you usually bill customers?
+    type: select
+    choices:
+      - { value: per_project, label: Per project or job, when it's done }
+      - { value: monthly_retainer, label: Every month, a fixed amount }
+      - { value: on_delivery, label: At the point of sale or delivery }
+      - { value: mixed, label: A mix of these }
+    default: per_project
+
+  - key: expense_approver
+    label: Who approves what the business spends?
+    type: select
+    choices:
+      - { value: owner, label: Me, the owner }
+      - { value: manager, label: A manager }
+      - { value: two_step, label: Manager first, then me }
+      - { value: nobody, label: Nobody, we just record it }
+    default: owner
+
+  - key: accountant_export
+    label: Do you have an accountant who needs the numbers?
+    type: boolean
+    default: true
+
+  - key: gst_registered
+    label: Are you registered for GST?
+    type: boolean
+    default: true
+    show_if: business.country == "IN"
+
+  - key: payment_methods
+    label: How do customers pay you?
+    type: multiselect
+    choices: [bank_transfer, upi, card, cash, cheque, paypal]
+    default: [bank_transfer, upi]
+
+templates:
+  - id: finance.template.small_agency
+    name: Small agency finance
+    description: Project invoicing, retainers, expense claims and a cash view. For teams of 5 to 25.
+    domains: [agencies]
+    items:
+      - { id: finance.feature.invoicing, options: { numbering: yearly_prefix } }
+      - { id: finance.feature.expenses }
+      - { id: finance.agent.invoice-reminders }
+      - { id: finance.automation.overdue-escalation }
+      - { id: finance.dashboard.cash-flow }
+      - { id: finance.report.monthly-pl }
+      - { id: finance.doc_template.invoice-pdf }
+      - { id: finance.connector.bank-statement-import }
+
+  - id: finance.template.retail_counter
+    name: Retail finance
+    description: Point-of-sale style billing, daily takings, supplier payments.
+    domains: [retail]
+    items:
+      - { id: finance.feature.invoicing, options: { numbering: sequential } }
+      - { id: finance.feature.daily-takings }
+      - { id: finance.feature.supplier-payments }
+      - { id: finance.dashboard.cash-flow }

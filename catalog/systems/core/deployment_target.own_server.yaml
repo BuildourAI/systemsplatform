@@ -1,0 +1,36 @@
+id: core.deployment_target.own_server
+kind: deployment_target
+system: core
+name: On your own server
+tagline: Everything stays inside your walls
+description: >
+  Your system runs on a machine you control, in your office or your own cloud account. Choose this
+  when your rules require it. Someone will need to look after that machine.
+tier: advanced
+effort_points: 4
+options:
+  - key: where
+    label: Where is that machine?
+    type: select
+    choices:
+      - { value: office, label: In our office }
+      - { value: aws, label: Our AWS account }
+      - { value: other_cloud, label: Another cloud provider }
+    default: aws
+  - key: who_maintains
+    label: Who looks after it?
+    type: select
+    choices:
+      - { value: internal_it, label: Our own IT person }
+      - { value: external, label: An outside contractor }
+      - { value: nobody_yet, label: Nobody yet }
+    default: nobody_yet
+free_text:
+  - key: constraints
+    prompt: Why does it need to be on your own server?
+    placeholder: e.g. our client contracts require data to stay on our infrastructure
+dependencies: { requires: [], recommends: [], conflicts: [core.deployment_target.vercel] }
+build:
+  acceptance:
+    - The system survives a reboot of the machine without manual intervention
+    - Backups run off that machine, not only on it

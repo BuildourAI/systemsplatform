@@ -1,0 +1,52 @@
+id: finance.dashboard.cash-flow
+kind: dashboard
+system: finance
+name: Cash flow view
+tagline: What came in, what is coming, what is late
+description: >
+  One screen that answers the question every owner asks on a Monday morning: are we alright?
+  Money received, money expected, money overdue, and the handful of invoices that matter most.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 3
+
+options:
+  - key: period
+    label: What period should it cover?
+    type: select
+    choices:
+      - { value: rolling_30_days, label: Last and next 30 days }
+      - { value: rolling_90_days, label: Last and next 90 days }
+      - { value: this_quarter, label: This quarter }
+      - { value: this_financial_year, label: This financial year }
+    default: rolling_90_days
+  - key: show_projection
+    label: Project forward based on what is due?
+    chip: "Projects forward"
+    type: boolean
+    default: true
+  - key: who_can_see
+    label: Who should be able to open this?
+    type: select
+    choices:
+      - { value: owner_only, label: Only me }
+      - { value: owner_and_finance, label: Me and whoever handles the money }
+      - { value: all_managers, label: All managers }
+    default: owner_only
+
+free_text:
+  - key: extra_numbers
+    prompt: Any number you check regularly that should be on here?
+    placeholder: e.g. how much each of our three retainer clients owes right now
+
+dependencies:
+  requires: [finance.feature.invoicing]
+  recommends: [finance.feature.expenses]
+  conflicts: []
+
+build:
+  screens: [Cash flow dashboard]
+  acceptance:
+    - Every figure on the dashboard matches what the underlying lists show
+    - Someone without permission cannot open it or reach it by guessing the address
+    - The overdue total agrees with the overdue filter on the invoice list

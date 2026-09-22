@@ -1,0 +1,117 @@
+id: crm.agent.follow-up
+kind: agent
+system: crm
+name: Follow-up teammate
+tagline: Makes sure no enquiry goes quiet without someone noticing
+description: >
+  Watches every open lead and deal. When one has gone quiet, it drafts the follow-up and either
+  sends it or hands it to you. It knows the difference between a lead that needs chasing and a
+  customer who said "call me in March".
+tier: standard
+domains: [agencies, services, retail, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: quiet_after
+    label: After how long with no contact should it act?
+    chip: "Quiet after"
+    type: number
+    default: 5
+    unit: days
+  - key: channels
+    label: How should it follow up?
+    type: multiselect
+    choices: [email, whatsapp, task_for_me]
+    default: [email, task_for_me]
+  - key: max_follow_ups
+    label: How many times before it gives up?
+    type: select
+    choices:
+      - { value: "2", label: Twice }
+      - { value: "3", label: Three times }
+      - { value: "5", label: Five times }
+      - { value: unlimited, label: Keep going until I say stop }
+    default: "3"
+  - key: approval_before_send
+    label: Should you see each message first?
+    type: select
+    choices:
+      - { value: never, label: No, send them }
+      - { value: first_time, label: Only the first one to each person }
+      - { value: always, label: Yes, always }
+    default: first_time
+  - key: respect_callback_dates
+    label: Honour "call me later" dates?
+    chip: "Honours callback dates"
+    type: boolean
+    default: true
+  - key: tone
+    label: How should it sound?
+    type: select
+    choices:
+      - { value: warm, label: Warm and personal }
+      - { value: neutral, label: Plain and professional }
+      - { value: brief, label: Very short }
+    default: warm
+
+free_text:
+  - key: tone_notes
+    prompt: How do you want prospects spoken to?
+    placeholder: e.g. never sound desperate, always offer something useful rather than just checking in
+  - key: never_chase
+    prompt: Anyone it should leave alone?
+    placeholder: e.g. anyone marked as a price shopper, our two biggest clients who I handle myself
+
+dependencies:
+  requires: [crm.feature.leads]
+  recommends: [crm.feature.pipeline, finance.connector.whatsapp]
+  conflicts: []
+
+agent:
+  reports_to: owner
+  triggers:
+    - { type: schedule, value: daily at 09:00 local time }
+    - { type: event, value: a lead or deal passes the quiet threshold }
+    - { type: event, value: a prospect replies }
+  permissions:
+    read: [Lead, LeadActivity, Deal, Quote]
+    write: [LeadActivity, FollowUpDraft, Task]
+    never: [Deal, Quote, Lead]
+    external: "Send messages on the chosen channels, to lead contacts only"
+  guardrails:
+    - Never quote a price, promise a discount, or commit to a date. Hand those to the owner.
+    - Never contact anyone in the owner's leave-alone list.
+    - Never contact a lead before a callback date they asked for.
+    - Stop the moment a deal is marked won or lost.
+    - At most one message per person per week, across all their deals.
+    - If a prospect asks to be left alone, stop and tell the owner.
+    - Never invent a reason for getting in touch. If there is nothing to say, create a task for the owner instead.
+  tools_needed: [email, whatsapp, calendar]
+  playbook_md: |
+    ## Playbook
+
+    Every morning:
+    1. Find open leads and deals with no activity for {{options.quiet_after}} days.
+    2. Skip anything won, lost, in the leave-alone list, or with a future callback date.
+    3. Skip anyone contacted in the last week.
+    4. Check how many follow-ups this person has already had against the limit
+       ({{options.max_follow_ups}}). Past the limit, create a task for the owner rather than
+       sending anything.
+    5. Draft a message in the **{{options.tone}}** tone that refers to the actual conversation,
+       not a generic check-in.
+    6. Approval setting is **{{options.approval_before_send}}**. Follow it exactly.
+    7. Record every message as activity on the lead.
+
+    When a prospect replies:
+    - Interested: tell the owner immediately with the full thread.
+    - A question about price, scope or timing: do not answer. Hand it over.
+    - Not interested: mark the deal lost with their reason and tell the owner.
+
+    Owner's tone notes: {{free_text.tone_notes}}
+    Leave alone: {{free_text.never_chase}}
+  acceptance:
+    - A lead quiet for longer than the threshold produces exactly one follow-up
+    - A lead with a future callback date is not contacted before it
+    - Marking a deal won or lost stops all follow-ups immediately
+    - A reply is escalated to the owner and never answered automatically
+    - No message ever contains a price or a commitment

@@ -1,0 +1,10 @@
+id: core
+name: Foundations
+tagline: Where your data lives and where the system runs
+description: Cross-cutting choices that apply to the whole build, not to one system.
+status: live
+browsable: false
+domains: []
+use_cases: []
+questions: []
+templates: []

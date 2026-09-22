@@ -1,0 +1,65 @@
+id: crm.feature.leads
+kind: feature
+system: crm
+name: Enquiries and leads
+tagline: Every enquiry in one place, none forgotten
+description: >
+  Whoever gets in touch, however they get in touch, ends up on one list with a name, what they
+  want, where they came from and who is looking after them. No more "did anyone reply to that?"
+tier: core
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: capture_from
+    label: How should enquiries arrive?
+    type: multiselect
+    choices:
+      - { value: web_form, label: A form on our website }
+      - { value: whatsapp, label: WhatsApp messages }
+      - { value: email, label: Emails to our enquiry address }
+      - { value: manual, label: Typed in by us after a call }
+    default: [web_form, manual]
+  - key: assignment
+    label: Who picks up a new enquiry?
+    type: select
+    choices:
+      - { value: owner, label: Always me }
+      - { value: round_robin, label: Share them out evenly }
+      - { value: by_source, label: Depends where it came from }
+      - { value: manual, label: Someone assigns them by hand }
+    default: owner
+  - key: duplicate_detection
+    label: Spot when the same person enquires twice?
+    chip: "Spots duplicate enquiries"
+    type: boolean
+    default: true
+  - key: lead_scoring
+    label: Rank leads by how promising they look?
+    chip: "Leads ranked"
+    type: boolean
+    default: false
+
+free_text:
+  - key: qualify_questions
+    prompt: What do you need to know before an enquiry is worth your time?
+    placeholder: e.g. their budget, their timeline, whether they have bought this kind of thing before
+  - key: special_rules
+    prompt: Anything specific about how enquiries work here?
+    placeholder: e.g. anything from an existing client goes straight to me, not the team
+
+dependencies:
+  requires: []
+  recommends: [crm.feature.pipeline, crm.agent.follow-up]
+  conflicts: []
+
+build:
+  entities:
+    - { name: Lead, fields: [name, company, phone, email, source, what_they_want, status, owner_id, created_at, score] }
+    - { name: LeadActivity, fields: [lead_id, type, note, at, by] }
+  screens: [Lead list with filters, Lead detail with history, Add lead]
+  workflows: [capture-lead, assign-lead, qualify-lead, mark-lost]
+  acceptance:
+    - An enquiry from the website appears on the list within moments, with its source recorded
+    - The same person enquiring twice is flagged rather than duplicated
+    - Every lead has someone responsible; none sit unassigned

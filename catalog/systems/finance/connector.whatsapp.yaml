@@ -1,0 +1,48 @@
+id: finance.connector.whatsapp
+kind: connector
+system: finance
+name: WhatsApp
+tagline: Send invoices and reminders where your customers actually read them
+description: >
+  Connects your WhatsApp Business account so invoices and payment reminders go out on WhatsApp
+  instead of sitting unread in an inbox. Replies come back into the system so nothing is lost in
+  someone's personal phone.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: account_type
+    label: What do you have today?
+    type: select
+    choices:
+      - { value: business_app, label: The WhatsApp Business app on a phone }
+      - { value: business_api, label: A WhatsApp Business API account }
+      - { value: none, label: Nothing yet, help me set it up }
+    default: business_app
+  - key: uses
+    label: What should go out on WhatsApp?
+    type: multiselect
+    choices: [invoices, payment_reminders, receipts, statements]
+    default: [invoices, payment_reminders]
+  - key: capture_replies
+    label: Bring customer replies back into the system?
+    chip: "Replies come back in"
+    type: boolean
+    default: true
+
+free_text:
+  - key: notes
+    prompt: Anything about how you use WhatsApp today?
+    placeholder: e.g. two of us answer the same number, we have a separate number for accounts
+
+dependencies:
+  requires: []
+  recommends: [finance.feature.invoicing]
+  conflicts: []
+
+build:
+  acceptance:
+    - A test invoice arrives on WhatsApp with the PDF attached and opens correctly
+    - A customer reply appears in the system against the right invoice
+    - Messages are never sent to a number that has not opted in

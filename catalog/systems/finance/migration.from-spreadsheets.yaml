@@ -1,0 +1,60 @@
+id: finance.migration.from-spreadsheets
+kind: migration
+system: finance
+name: Bring in what you already have
+tagline: Your existing customers, invoices and balances, moved across
+description: >
+  Takes the spreadsheet, Tally export or pile of PDFs you run on today and brings the important
+  parts across: who your customers are, what they owe, and what you have already billed. You
+  start on day one with real numbers rather than an empty system.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 4
+
+options:
+  - key: source
+    label: Where is your data now?
+    type: multiselect
+    choices:
+      - { value: excel, label: Excel or Google Sheets }
+      - { value: tally, label: Tally }
+      - { value: quickbooks, label: QuickBooks }
+      - { value: zoho, label: Zoho Books }
+      - { value: paper, label: Paper and PDFs }
+    default: [excel]
+  - key: what_to_bring
+    label: What should come across?
+    type: multiselect
+    choices:
+      - { value: customers, label: Customer list }
+      - { value: open_invoices, label: Unpaid invoices }
+      - { value: invoice_history, label: Past invoices }
+      - { value: suppliers, label: Suppliers }
+      - { value: opening_balances, label: Opening balances }
+    default: [customers, open_invoices, opening_balances]
+  - key: history_years
+    label: How far back?
+    type: select
+    choices:
+      - { value: current_only, label: Just what is open right now }
+      - { value: one_year, label: One year }
+      - { value: all, label: Everything I have }
+    default: one_year
+    show_if: options.what_to_bring includes "invoice_history"
+
+free_text:
+  - key: data_notes
+    prompt: Anything odd about how your data is kept?
+    placeholder: e.g. one sheet per year, customer names spelled differently across sheets
+
+dependencies:
+  requires: [finance.feature.invoicing]
+  recommends: []
+  conflicts: []
+
+build:
+  workflows: [import-customers, import-invoices, reconcile-opening-balances]
+  acceptance:
+    - Total outstanding after import matches what the owner believes they are owed
+    - No customer appears twice under slightly different spellings
+    - The owner reviews and confirms the import before it becomes live data

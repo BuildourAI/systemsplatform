@@ -1,0 +1,35 @@
+id: core.data_location.supabase
+kind: data_location
+system: core
+name: A proper database
+tagline: Fast, private, and it grows with you
+description: >
+  Your data lives in a real database that only your system can reach. It handles thousands of
+  records without slowing down, backs itself up, and nobody can open it by accident. This is the
+  right answer for almost everyone.
+tier: core
+effort_points: 2
+options:
+  - key: region
+    label: Where should your data physically sit?
+    type: select
+    choices:
+      - { value: ap-south-1, label: India (Mumbai) }
+      - { value: ap-southeast-1, label: Singapore }
+      - { value: eu-west-2, label: United Kingdom (London) }
+      - { value: us-east-1, label: United States (Virginia) }
+    default: ap-south-1
+    help: Usually the country you operate in, especially if your rules require it.
+  - key: backups
+    label: How often should it back up?
+    type: select
+    choices:
+      - { value: daily, label: Every day }
+      - { value: hourly, label: Every hour }
+    default: daily
+free_text: []
+dependencies: { requires: [], recommends: [], conflicts: [core.data_location.sheets, core.data_location.airtable] }
+build:
+  acceptance:
+    - Data is stored in the chosen region and nowhere else
+    - Backups are confirmed running before the build is called finished

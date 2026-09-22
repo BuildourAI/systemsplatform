@@ -1,0 +1,63 @@
+id: finance.report.monthly-pl
+kind: report
+system: finance
+name: Monthly profit and loss
+tagline: What you earned, what you spent, what is left
+description: >
+  A clean monthly summary you can read yourself and your accountant can work from. Income by
+  source, spending by category, and the number at the bottom.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 3
+
+options:
+  - key: delivery
+    label: How should it reach you?
+    type: multiselect
+    choices: [email, in_app, whatsapp]
+    default: [email, in_app]
+  - key: send_on
+    label: When should it arrive?
+    type: select
+    choices:
+      - { value: first_of_month, label: 1st of the following month }
+      - { value: fifth_of_month, label: 5th, once things have settled }
+      - { value: on_demand, label: Only when I ask for it }
+    default: fifth_of_month
+  - key: compare_previous
+    label: Show it next to last month?
+    chip: "Compared with last month"
+    type: boolean
+    default: true
+  - key: accountant_copy
+    label: Send a copy to your accountant?
+    chip: "Copy to the accountant"
+    type: boolean
+    default: false
+  - key: export_format
+    label: What format does your accountant need?
+    type: select
+    choices:
+      - { value: pdf, label: PDF to read }
+      - { value: excel, label: Excel }
+      - { value: tally, label: Something Tally can import }
+      - { value: quickbooks, label: Something QuickBooks can import }
+    default: pdf
+    show_if: options.accountant_copy == true
+
+free_text:
+  - key: special_rules
+    prompt: Anything your accountant always asks for?
+    placeholder: e.g. split income between retainer and project work, show GST separately
+
+dependencies:
+  requires: [finance.feature.invoicing]
+  recommends: [finance.feature.expenses]
+  conflicts: []
+
+build:
+  workflows: [generate-monthly-pl, email-monthly-pl]
+  acceptance:
+    - The report totals match the invoice and expense lists for the same month
+    - It arrives on the chosen day without anyone triggering it
+    - The export opens in the accountant's software without manual fixing

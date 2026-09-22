@@ -1,0 +1,90 @@
+# Questions asked once per account, and the tags used to filter the catalog.
+
+profile_questions:
+  - key: business_name
+    label: What is your business called?
+    type: text
+    help: This goes on your invoices and documents.
+
+  - key: industry
+    label: What kind of business is it?
+    type: select
+    choices:
+      - { value: agencies, label: Agency or studio, hint: Design, marketing, consulting, software }
+      - { value: retail, label: Retail or shop }
+      - { value: services, label: Services, hint: Trades, repairs, professional services }
+      - { value: clinics, label: Clinic or practice }
+      - { value: manufacturing, label: Manufacturing or workshop }
+      - { value: education, label: School or training business }
+      - { value: nonprofits, label: Nonprofit }
+      - { value: other, label: Something else }
+
+  - key: country
+    label: Where do you operate?
+    type: select
+    choices:
+      - { value: IN, label: India }
+      - { value: AE, label: United Arab Emirates }
+      - { value: GB, label: United Kingdom }
+      - { value: US, label: United States }
+      - { value: SG, label: Singapore }
+      - { value: other, label: Somewhere else }
+
+  - key: currency
+    label: What currency do you charge in?
+    type: select
+    choices:
+      - { value: INR, label: Indian rupee }
+      - { value: AED, label: UAE dirham }
+      - { value: GBP, label: Pound sterling }
+      - { value: USD, label: US dollar }
+      - { value: SGD, label: Singapore dollar }
+      - { value: EUR, label: Euro }
+
+  - key: team_size
+    label: How many people work in the business?
+    type: select
+    choices:
+      - { value: solo, label: Just me }
+      - { value: 2_10, label: 2 to 10 }
+      - { value: 11_50, label: 11 to 50 }
+      - { value: 51_200, label: 51 to 200 }
+      - { value: 200_plus, label: More than 200 }
+
+  - key: existing_tools
+    label: What do you already use to run things?
+    type: multiselect
+    help: We will connect to these rather than replace them where we can.
+    choices:
+      - { value: google_workspace, label: Google Workspace }
+      - { value: microsoft_365, label: Microsoft 365 }
+      - { value: whatsapp_business, label: WhatsApp Business }
+      - { value: tally, label: Tally }
+      - { value: quickbooks, label: QuickBooks }
+      - { value: zoho, label: Zoho }
+      - { value: excel, label: Excel or Google Sheets }
+      - { value: paper, label: Mostly paper and memory }
+
+  - key: who_runs_claude
+    label: Who will actually run the build?
+    type: select
+    help: There is no wrong answer. It only changes how much we explain.
+    choices:
+      - { value: owner, label: Me, and I am not technical }
+      - { value: helper, label: Someone technical who helps me }
+      - { value: buildour, label: I would like Buildour to run it }
+
+domains:
+  - { id: agencies, label: Agencies and studios, kind: industry }
+  - { id: retail, label: Retail, kind: industry }
+  - { id: services, label: Services and trades, kind: industry }
+  - { id: clinics, label: Clinics and practices, kind: industry }
+  - { id: manufacturing, label: Manufacturing, kind: industry }
+  - { id: education, label: Education, kind: industry }
+  - { id: nonprofits, label: Nonprofits, kind: industry }
+  - { id: finance, label: Finance, kind: use_case }
+  - { id: sales, label: Sales, kind: use_case }
+  - { id: operations, label: Operations, kind: use_case }
+  - { id: hr, label: People and HR, kind: use_case }
+  - { id: compliance, label: Compliance, kind: use_case }
+  - { id: support, label: Customer support, kind: use_case }

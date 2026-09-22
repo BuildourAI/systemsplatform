@@ -1,0 +1,70 @@
+id: crm
+name: Sales and customers
+tagline: Know every lead, chase every one, lose none of them
+description: >
+  Everything from the first enquiry to the signed deal. Where leads came from, who is following up,
+  what was promised, and which ones have gone quiet. Replaces the notebook, the WhatsApp threads
+  and the spreadsheet nobody updates.
+status: live
+domains: [agencies, services, retail, manufacturing, clinics]
+use_cases: [sales]
+icon: handshake
+
+questions:
+  - key: sales_team_size
+    label: How many people sell?
+    type: select
+    choices:
+      - { value: just_me, label: Just me }
+      - { value: 2_5, label: 2 to 5 }
+      - { value: 6_plus, label: 6 or more }
+    default: just_me
+
+  - key: lead_sources
+    label: Where do enquiries come from?
+    type: multiselect
+    choices:
+      - { value: website, label: Our website }
+      - { value: whatsapp, label: WhatsApp }
+      - { value: phone, label: Phone calls }
+      - { value: referral, label: Referrals }
+      - { value: walk_in, label: Walk-ins }
+      - { value: instagram, label: Instagram or Facebook }
+      - { value: marketplace, label: A marketplace or listing site }
+    default: [website, whatsapp, referral]
+
+  - key: sales_cycle
+    label: How long from first contact to a yes?
+    type: select
+    choices:
+      - { value: same_day, label: Same day }
+      - { value: days, label: A few days }
+      - { value: weeks, label: A few weeks }
+      - { value: months, label: Months }
+    default: weeks
+
+  - key: quotes_needed
+    label: Do you send written quotes or proposals?
+    type: boolean
+    default: true
+
+templates:
+  - id: crm.template.agency
+    name: Agency sales
+    description: Enquiries, proposals, follow-ups and a pipeline you can see. For project-based selling.
+    domains: [agencies, services]
+    items:
+      - { id: crm.feature.leads }
+      - { id: crm.feature.pipeline }
+      - { id: crm.feature.quotes }
+      - { id: crm.agent.follow-up }
+      - { id: crm.dashboard.pipeline-health }
+      - { id: crm.doc_template.proposal }
+
+  - id: crm.template.lean
+    name: Just track my leads
+    description: The smallest useful version. Capture enquiries, remember to follow up, nothing else.
+    domains: [retail, services, clinics]
+    items:
+      - { id: crm.feature.leads }
+      - { id: crm.agent.follow-up }

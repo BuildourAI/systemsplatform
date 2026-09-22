@@ -1,0 +1,66 @@
+id: crm.feature.pipeline
+kind: feature
+system: crm
+name: Pipeline
+tagline: See every deal and what stage it is at
+description: >
+  A board of your live deals, moving left to right as they progress. You can see at a glance what
+  is close, what is stuck, and what is likely to land this month.
+tier: core
+domains: [agencies, services, manufacturing]
+effort_points: 4
+
+options:
+  - key: stages
+    label: What stages do your deals go through?
+    type: select
+    choices:
+      - { value: simple, label: Simple, hint: New, talking, quoted, won, lost }
+      - { value: standard, label: Standard, hint: New, qualified, meeting, proposal, negotiation, won, lost }
+      - { value: custom, label: My own, described below }
+    default: standard
+  - key: value_tracking
+    label: Track how much each deal is worth?
+    chip: "Deal value tracked"
+    type: boolean
+    default: true
+  - key: probability
+    label: Track how likely each one is?
+    chip: "Likelihood tracked"
+    type: boolean
+    default: false
+  - key: expected_close
+    label: Track when you expect to close it?
+    chip: "Expected close date"
+    type: boolean
+    default: true
+  - key: stale_threshold
+    label: After how many days with no activity is a deal "stuck"?
+    chip: "Stuck after"
+    type: number
+    default: 14
+    unit: days
+
+free_text:
+  - key: stages_list
+    prompt: What are your stages, in order?
+    placeholder: e.g. Enquiry, Site visit, Quote sent, Negotiating, Won
+  - key: special_rules
+    prompt: Anything specific about how deals move?
+    placeholder: e.g. nothing goes past Quote sent without my approval
+
+dependencies:
+  requires: [crm.feature.leads]
+  recommends: [crm.dashboard.pipeline-health]
+  conflicts: []
+
+build:
+  entities:
+    - { name: Deal, fields: [lead_id, title, stage, value, probability, expected_close, owner_id, last_activity_at] }
+    - { name: Stage, fields: [name, order, is_won, is_lost] }
+  screens: [Pipeline board, Deal detail, Stage settings]
+  workflows: [move-stage, mark-won, mark-lost, flag-stale]
+  acceptance:
+    - Dragging a deal to a new stage records who moved it and when
+    - Deals with no activity past the threshold are visibly marked as stuck
+    - Won and lost deals leave the board but stay findable

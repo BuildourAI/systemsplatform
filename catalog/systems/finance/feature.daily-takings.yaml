@@ -1,0 +1,53 @@
+id: finance.feature.daily-takings
+kind: feature
+system: finance
+name: Daily takings
+tagline: Close out the day and know the till is right
+description: >
+  At the end of each day, record what came in by cash, card and transfer, count the till, and see
+  straight away whether anything is missing. A week of this and you can see your patterns.
+tier: standard
+domains: [retail, services, clinics]
+effort_points: 3
+
+options:
+  - key: shifts
+    label: Do you close out more than once a day?
+    chip: "More than one close a day"
+    type: boolean
+    default: false
+  - key: payment_types
+    label: What do you take?
+    type: multiselect
+    choices: [cash, card, upi, bank_transfer, wallet, cheque]
+    default: [cash, card, upi]
+  - key: float_tracking
+    label: Track the opening float in the till?
+    chip: "Till float tracked"
+    type: boolean
+    default: true
+  - key: variance_alert
+    label: Tell you when the count does not match?
+    chip: "Alerts on a mismatch"
+    type: boolean
+    default: true
+
+free_text:
+  - key: special_rules
+    prompt: Anything specific about how you close the day?
+    placeholder: e.g. we bank cash every Tuesday, the evening shift counts separately
+
+dependencies:
+  requires: []
+  recommends: [finance.dashboard.cash-flow]
+  conflicts: []
+
+build:
+  entities:
+    - { name: DayClose, fields: [date, shift, opening_float, counted_cash, card_total, other_total, expected_total, variance, closed_by, notes] }
+  screens: [Close the day form, Takings history with variance highlighted]
+  workflows: [close-day, flag-variance]
+  acceptance:
+    - Closing a day with a mismatch flags the variance rather than silently accepting it
+    - A closed day cannot be edited without leaving a trace of who changed it
+    - The history shows takings by payment type over any date range

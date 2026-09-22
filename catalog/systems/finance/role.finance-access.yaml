@@ -1,0 +1,50 @@
+id: finance.role.finance-access
+kind: role
+system: finance
+name: Who can see the money
+tagline: Decide who sees what, before it becomes awkward
+description: >
+  Sets up who can view, create and approve. Most owners want their team raising invoices without
+  seeing the bank balance or each other's salary.
+tier: core
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 2
+
+options:
+  - key: roles_needed
+    label: Which roles do you need?
+    type: multiselect
+    choices:
+      - { value: owner, label: Owner, hint: Sees everything }
+      - { value: finance, label: Finance person, hint: Everything except settings }
+      - { value: manager, label: Manager, hint: Their team's numbers only }
+      - { value: staff, label: Staff, hint: Raise invoices, claim expenses, see nothing else }
+      - { value: accountant, label: External accountant, hint: Read-only, exports only }
+    default: [owner, finance, staff]
+  - key: hide_totals_from_staff
+    label: Hide overall revenue from staff?
+    chip: "Revenue hidden from staff"
+    type: boolean
+    default: true
+  - key: audit_trail
+    label: Keep a record of who changed what?
+    chip: "Records who changed what"
+    type: boolean
+    default: true
+
+free_text:
+  - key: special_rules
+    prompt: Anything specific about who should see what?
+    placeholder: e.g. our office manager handles everything except payroll, which only I touch
+
+dependencies:
+  requires: []
+  recommends: []
+  conflicts: []
+
+build:
+  screens: [People and permissions]
+  acceptance:
+    - A staff account cannot reach the cash flow view by any route, including a direct link
+    - An accountant account can export but cannot change anything
+    - Every change to a record shows who made it and when

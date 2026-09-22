@@ -1,0 +1,65 @@
+id: finance.doc_template.invoice-pdf
+kind: doc_template
+system: finance
+name: Invoice document
+tagline: Your invoice, looking like you meant it
+description: >
+  The PDF your customer actually opens. Your logo, your details, the tax breakdown done properly,
+  and a way to pay right there on the page.
+tier: core
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 2
+
+options:
+  - key: style
+    label: How should it look?
+    type: select
+    choices:
+      - { value: minimal, label: Minimal, hint: Plenty of white space, quiet }
+      - { value: classic, label: Classic, hint: Bordered, formal, familiar }
+      - { value: bold, label: Bold, hint: Strong header in your brand colour }
+    default: minimal
+  - key: logo
+    label: Put your logo on it?
+    chip: "Your logo on it"
+    type: boolean
+    default: true
+  - key: payment_qr
+    label: Include a payment QR code?
+    chip: "Payment QR code"
+    type: boolean
+    default: true
+  - key: bank_details
+    label: Print your bank details on it?
+    chip: "Bank details printed"
+    type: boolean
+    default: true
+  - key: terms_footer
+    label: Include your payment terms at the bottom?
+    chip: "Payment terms in the footer"
+    type: boolean
+    default: true
+  - key: languages
+    label: What language should it be in?
+    type: multiselect
+    choices: [english, hindi, arabic, tamil, marathi]
+    default: [english]
+
+free_text:
+  - key: footer_text
+    prompt: Anything that must appear on every invoice?
+    placeholder: e.g. our GSTIN and PAN, a late payment clause, our registered office address
+  - key: brand_notes
+    prompt: Anything about how it should look?
+    placeholder: e.g. our brand colour is a deep green, use our logo on the top left only
+
+dependencies:
+  requires: [finance.feature.invoicing]
+  recommends: []
+  conflicts: []
+
+build:
+  acceptance:
+    - The PDF opens correctly on a phone and a laptop
+    - The tax breakdown on the document matches the invoice record exactly
+    - The payment QR, when scanned, carries the right amount

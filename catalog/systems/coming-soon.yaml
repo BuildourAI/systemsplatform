@@ -1,0 +1,111 @@
+# Systems we have not authored yet. Listed so browsing feels complete and so the
+# waitlist tells us which to write next. See docs/planning/07-roadmap.md.
+id: hr
+name: People and HR
+tagline: Records, leave, attendance and reviews, without the paperwork
+description: >
+  Everyone who works for you, what they are owed, when they are off, and how they are doing.
+  Replaces the folder of scanned contracts and the WhatsApp leave requests.
+status: coming_soon
+domains: [agencies, retail, services, clinics, manufacturing, education, nonprofits]
+use_cases: [hr]
+icon: users
+---
+id: inventory
+name: Stock and suppliers
+tagline: Know what you have, what is running out, and what it cost
+description: Stock levels, reorder points, supplier lead times and stock takes that actually balance.
+status: coming_soon
+domains: [retail, manufacturing, services]
+use_cases: [operations]
+icon: boxes
+---
+id: support
+name: Customer support
+tagline: Every question answered, none lost
+description: Tickets from every channel in one queue, with response times you can hold people to.
+status: coming_soon
+domains: [retail, services, clinics, agencies]
+use_cases: [support]
+icon: headset
+---
+id: lms
+name: Training and LMS
+tagline: Teach your team once, not every time someone joins
+description: Courses, quizzes and certificates, with a record of who has done what.
+status: coming_soon
+domains: [education, agencies, manufacturing, clinics]
+use_cases: [hr]
+icon: graduation-cap
+---
+id: docs
+name: Document control
+tagline: One version of every document, and it is the right one
+description: Controlled documents with versions, approvals and a record of who has read what.
+status: coming_soon
+domains: [manufacturing, clinics, education, nonprofits]
+use_cases: [compliance]
+icon: file-stack
+---
+id: qa
+name: Quality control and assurance
+tagline: Catch problems before your customer does
+description: Inspections, non-conformance reports, corrective actions and audit readiness.
+status: coming_soon
+domains: [manufacturing, clinics, services]
+use_cases: [compliance]
+icon: shield-check
+---
+id: compliance
+name: Compliance
+tagline: Know what you must do, and prove you did it
+description: An obligations register, the evidence to back it up, and reminders before deadlines.
+status: coming_soon
+domains: [manufacturing, clinics, nonprofits, education]
+use_cases: [compliance]
+icon: scale
+---
+id: ai-dept
+name: AI department
+tagline: A team of AI teammates with real jobs
+description: Agents with playbooks, permissions and guardrails, reporting to a person who reviews their work.
+status: coming_soon
+domains: [agencies, services, retail, manufacturing]
+use_cases: [operations]
+icon: bot
+---
+id: regulations
+name: Regulations and filings
+tagline: Never miss a licence, a return or a renewal
+description: Everything you must file, when it is due, and what happened last time.
+status: coming_soon
+domains: [manufacturing, clinics, retail, services]
+use_cases: [compliance]
+icon: landmark
+---
+id: projects
+name: Projects and delivery
+tagline: What is promised, what is done, what is late
+description: Projects, milestones, who is on what, and whether you are making money on it.
+status: coming_soon
+domains: [agencies, services, manufacturing]
+use_cases: [operations]
+icon: kanban
+---
+id: ops
+name: Operations and SOPs
+tagline: The way things are done here, written down
+description: Your procedures as living checklists that people actually follow.
+status: coming_soon
+domains: [retail, services, manufacturing, clinics]
+use_cases: [operations]
+icon: clipboard-list
+---
+id: portal
+name: Customer portal
+tagline: Let customers help themselves
+description: Invoices, documents, requests and status, without anyone emailing you for them.
+status: coming_soon
+domains: [agencies, services, clinics, education]
+use_cases: [support]
+icon: door-open

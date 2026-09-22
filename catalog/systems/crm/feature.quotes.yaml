@@ -1,0 +1,73 @@
+id: crm.feature.quotes
+kind: feature
+system: crm
+name: Quotes and proposals
+tagline: Send a price, track whether they opened it
+description: >
+  Build a quote from your standard items, send it as a proper document, and see when the customer
+  opened it. Accepted quotes turn into invoices without retyping anything.
+tier: standard
+domains: [agencies, services, manufacturing]
+effort_points: 5
+
+options:
+  - key: line_items
+    label: Do you quote line by line?
+    chip: "Quoted line by line"
+    type: boolean
+    default: true
+  - key: price_list
+    label: Do you have standard prices?
+    type: select
+    choices:
+      - { value: fixed, label: Yes, a fixed price list }
+      - { value: from_ranges, label: Yes, but I adjust each time }
+      - { value: none, label: No, every quote is from scratch }
+    default: from_ranges
+  - key: validity_days
+    label: How long is a quote valid?
+    chip: "Valid for"
+    type: number
+    default: 30
+    unit: days
+  - key: online_acceptance
+    label: Let customers accept it online?
+    chip: "Accepted online"
+    type: boolean
+    default: true
+  - key: convert_to_invoice
+    label: Turn accepted quotes into invoices automatically?
+    chip: "Becomes an invoice"
+    type: boolean
+    default: true
+  - key: versions
+    label: Keep every version when you revise a quote?
+    chip: "Every version kept"
+    type: boolean
+    default: true
+
+free_text:
+  - key: standard_items
+    prompt: What do you usually quote for?
+    placeholder: e.g. brand identity, website design, monthly retainer, photography day rate
+  - key: terms
+    prompt: What terms go on every quote?
+    placeholder: e.g. 50% advance, balance on delivery, prices exclude GST
+
+dependencies:
+  requires: [crm.feature.leads]
+  recommends: [crm.doc_template.proposal, finance.feature.invoicing]
+  conflicts: []
+
+build:
+  entities:
+    - { name: Quote, fields: [deal_id, number, version, status, valid_until, subtotal, tax_total, total, sent_at, viewed_at, accepted_at] }
+    - { name: QuoteLine, fields: [quote_id, description, quantity, unit_price, line_total] }
+    - { name: PriceListItem, fields: [name, description, unit_price, active] }
+  screens: [Quote builder, Quote list, Customer-facing quote page]
+  workflows: [send-quote, revise-quote, accept-quote, expire-quote]
+  acceptance:
+    - A sent quote records when the customer opened it
+    - Revising a quote keeps the old version and increments the version number
+    - An accepted quote produces an invoice with matching line items and totals
+    - A quote past its validity date shows as expired, not still open

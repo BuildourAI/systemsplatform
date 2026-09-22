@@ -1,0 +1,81 @@
+id: finance.automation.overdue-escalation
+kind: automation
+system: finance
+name: Overdue escalation
+tagline: Flags badly overdue invoices to you, with everything you need to act
+description: >
+  When an invoice crosses the line from late to seriously late, this puts it in front of you with
+  the full history, and optionally pauses new work for that customer. No AI judgement involved,
+  it simply follows the rule you set.
+tier: standard
+domains: [agencies, services, manufacturing]
+effort_points: 2
+
+options:
+  - key: threshold_days
+    label: How many days overdue counts as serious?
+    chip: "Serious after"
+    type: number
+    default: 30
+    min: 1
+    max: 180
+
+  - key: threshold_amount
+    label: Only escalate above this amount
+    chip: "Only above"
+    type: currency
+    default: 0
+
+  - key: notify
+    label: Who should be told?
+    type: multiselect
+    choices: [owner, accounts_person, salesperson_on_account]
+    default: [owner]
+
+  - key: notify_channel
+    label: How should they be told?
+    type: multiselect
+    choices: [email, whatsapp, in_app]
+    default: [email, in_app]
+
+  - key: pause_customer
+    label: Should the customer be flagged to pause new work?
+    chip: "Customer flagged on hold"
+    type: boolean
+    default: true
+
+free_text:
+  - key: escalation_notes
+    prompt: Anything else that should happen when an invoice gets this late?
+    placeholder: e.g. also stop their portal access, copy our legal advisor above 200,000
+
+dependencies:
+  requires:
+    - finance.feature.invoicing
+  recommends:
+    - finance.agent.invoice-reminders
+  conflicts: []
+
+automation:
+  trigger:
+    type: schedule
+    value: daily at 08:00 local time
+
+  steps:
+    - Find every invoice unpaid for more than {{options.threshold_days}} days past its due date
+    - Filter to invoices over {{options.threshold_amount}}
+    - Skip invoices already escalated, unless the amount has grown
+    - "Build a summary per customer: invoices, total outstanding, oldest due date, reminders sent, replies"
+    - Notify {{options.notify}} on {{options.notify_channel}}
+    - If pause_customer is on, set the customer's status to "on hold for new work"
+    - Record the escalation so it is not repeated tomorrow
+
+  failure_handling:
+    on_error: Retry once after 15 minutes, then notify the owner that the check did not run
+    never: Never mark a customer on hold if the invoice data could not be read completely
+
+  acceptance:
+    - An invoice one day under the threshold is not escalated; one day over is
+    - A customer with three overdue invoices produces one escalation, not three
+    - Escalation does not repeat daily for the same unchanged invoice
+    - Turning on the pause flag sets customer status and is visible on the customer screen

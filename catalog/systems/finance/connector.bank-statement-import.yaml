@@ -1,0 +1,54 @@
+id: finance.connector.bank-statement-import
+kind: connector
+system: finance
+name: Bank statement import
+tagline: Match payments to invoices without typing them in
+description: >
+  Bring in your bank statement and let the system match incoming payments to the invoices they
+  belong to. What it cannot match with confidence, it puts in front of you rather than guessing.
+tier: standard
+domains: [agencies, retail, services, clinics, manufacturing]
+effort_points: 5
+
+options:
+  - key: method
+    label: How will statements get in?
+    type: select
+    choices:
+      - { value: csv_upload, label: I will upload a file, hint: Works with any bank }
+      - { value: email_forward, label: Forward the statement email }
+      - { value: bank_feed, label: A live connection to my bank, hint: Only some banks support this }
+    default: csv_upload
+  - key: auto_match_confidence
+    label: How sure should it be before matching on its own?
+    type: select
+    choices:
+      - { value: exact_only, label: Only exact amount and reference matches }
+      - { value: high, label: Confident matches, hint: Recommended }
+      - { value: suggest_all, label: Suggest everything, I will confirm each one }
+    default: high
+  - key: match_part_payments
+    label: Try to match part payments too?
+    chip: "Matches part payments"
+    type: boolean
+    default: true
+
+free_text:
+  - key: bank_notes
+    prompt: Which bank, and anything unusual about your statements?
+    placeholder: e.g. HDFC current account, customer names are truncated in the narration field
+
+dependencies:
+  requires: [finance.feature.invoicing]
+  recommends: []
+  conflicts: []
+
+build:
+  entities:
+    - { name: BankTransaction, fields: [date, amount, direction, narration, reference, matched_invoice_id, status] }
+  screens: [Import statement, Review unmatched transactions]
+  workflows: [import-statement, auto-match, confirm-match]
+  acceptance:
+    - Importing the same statement twice does not create duplicate transactions
+    - A confident match marks the invoice paid with the right amount and date
+    - An uncertain match waits for the owner instead of guessing
