@@ -1,0 +1,112 @@
+{
+  "manifest_version": "1.0",
+  "project": {
+    "id": "prj_8fk2n",
+    "slug": "acme-design-finance",
+    "name": "Acme Design — Finance System",
+    "version": 1
+  },
+  "generated_at": "2026-09-22T10:14:00Z",
+  "catalog_version": "2026.09.3",
+  "business_profile": {
+    "name": "Acme Design",
+    "country": "IN",
+    "currency": "INR",
+    "language": "en",
+    "team_size": 12,
+    "industry": "agencies",
+    "existing_tools": ["Google Workspace", "WhatsApp Business", "Tally"],
+    "data_sensitivity": "normal",
+    "who_runs_claude": "owner"
+  },
+  "data_location": { "id": "core.data_location.supabase", "options": { "region": "ap-south-1" } },
+  "deployment_target": { "id": "core.deployment_target.vercel", "options": {} },
+  "systems": [
+    {
+      "id": "finance",
+      "answers": {
+        "invoice_cadence": "mixed",
+        "expense_approver": "owner",
+        "accountant_export": true,
+        "gst_registered": true,
+        "payment_methods": ["bank_transfer", "upi"]
+      },
+      "free_text": "We have 3 retainer clients billed monthly and everything else is per project.",
+      "items": [
+        {
+          "id": "finance.feature.invoicing",
+          "kind": "feature",
+          "options": {
+            "numbering": "yearly_prefix",
+            "taxes": ["gst"],
+            "send_channels": ["email", "whatsapp"],
+            "part_payments": true,
+            "multi_currency": false,
+            "recurring": true
+          },
+          "free_text": {
+            "special_rules": "GST breakdown per line. UPI QR code on every invoice. 15 day terms for retainer clients, 30 for projects.",
+            "fields_we_need": "Client PO number in the header where they give us one."
+          }
+        },
+        {
+          "id": "finance.agent.invoice-reminders",
+          "kind": "agent",
+          "options": {
+            "tone": "friendly",
+            "channels": ["email", "whatsapp"],
+            "schedule": ["on_due", "after_7", "after_14"],
+            "escalate_to_human_after": "after_3",
+            "approval_before_send": "first_time",
+            "working_hours_only": true
+          },
+          "free_text": {
+            "tone_notes": "Address them by first name. Never mention late fees.",
+            "never_chase": "Our 3 retainer clients: Northwind, Skyline, Perch."
+          }
+        },
+        {
+          "id": "finance.automation.overdue-escalation",
+          "kind": "automation",
+          "options": {
+            "threshold_days": 30,
+            "threshold_amount": 25000,
+            "notify": ["owner"],
+            "notify_channel": ["email", "in_app"],
+            "pause_customer": true
+          },
+          "free_text": { "escalation_notes": "" }
+        },
+        {
+          "id": "finance.dashboard.cash-flow",
+          "kind": "dashboard",
+          "options": { "period": "rolling_90_days" },
+          "free_text": {}
+        },
+        {
+          "id": "finance.doc_template.invoice-pdf",
+          "kind": "doc_template",
+          "options": { "style": "minimal", "logo": true },
+          "free_text": {}
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "item": "finance.agent.invoice-reminders",
+      "relation": "requires",
+      "related": "finance.feature.invoicing",
+      "status": "resolved"
+    },
+    {
+      "item": "finance.agent.invoice-reminders",
+      "relation": "recommends",
+      "related": "finance.connector.whatsapp",
+      "status": "unresolved",
+      "note": "WhatsApp sending was not purchased. Build the agent to send by email, and leave a clear seam for WhatsApp later."
+    }
+  ],
+  "already_have": [],
+  "cart_free_text": "Our accountant uses Tally, so exports need to be in a format Tally can import."
+}

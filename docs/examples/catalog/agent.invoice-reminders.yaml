@@ -1,0 +1,144 @@
+id: finance.agent.invoice-reminders
+kind: agent
+system: finance
+name: Invoice reminder teammate
+tagline: Politely chases unpaid invoices so you don't have to
+description: >
+  Watches your unpaid invoices and follows up on a schedule you choose. Writes in your tone,
+  stops the moment payment arrives, and escalates to you when a customer goes quiet or replies
+  with a problem. It never threatens, never invents amounts, and never contacts a customer you
+  have put on hold.
+tier: standard
+domains: [agencies, services, clinics, manufacturing]
+effort_points: 3
+
+options:
+  - key: tone
+    label: How should it sound?
+    type: select
+    choices:
+      - { value: friendly, label: Friendly and warm }
+      - { value: neutral, label: Plain and businesslike }
+      - { value: firm, label: Firm and direct }
+    default: friendly
+
+  - key: channels
+    label: How should it reach customers?
+    type: multiselect
+    choices: [email, whatsapp, sms]
+    default: [email]
+
+  - key: schedule
+    label: When should it follow up?
+    type: multiselect
+    choices:
+      - { value: before_3, label: 3 days before the due date }
+      - { value: on_due, label: On the due date }
+      - { value: after_3, label: 3 days after }
+      - { value: after_7, label: 7 days after }
+      - { value: after_14, label: 14 days after }
+      - { value: after_30, label: 30 days after }
+    default: [on_due, after_7, after_14]
+
+  - key: escalate_to_human_after
+    label: When should it hand the customer over to you?
+    type: select
+    choices:
+      - { value: after_2, label: After 2 reminders with no reply }
+      - { value: after_3, label: After 3 reminders with no reply }
+      - { value: on_any_reply, label: The moment a customer replies anything }
+    default: after_3
+
+  - key: approval_before_send
+    label: Should you see each message before it goes out?
+    type: select
+    choices:
+      - { value: never, label: No, send them automatically }
+      - { value: first_time, label: Only the first time for each customer }
+      - { value: always, label: Yes, always ask me first }
+    default: first_time
+
+  - key: working_hours_only
+    label: Only contact customers during working hours?
+    type: boolean
+    default: true
+
+free_text:
+  - key: tone_notes
+    prompt: Anything about how you want customers spoken to?
+    placeholder: >
+      e.g. always address them by first name, never mention late fees, mention that we are happy
+      to arrange instalments for amounts over 50,000
+
+  - key: never_chase
+    prompt: Anyone it should never chase?
+    placeholder: e.g. our two retainer clients, anyone marked as a dispute
+
+dependencies:
+  requires:
+    - finance.feature.invoicing
+  recommends:
+    - finance.connector.whatsapp
+    - finance.automation.overdue-escalation
+  conflicts: []
+
+agent:
+  reports_to: owner
+
+  triggers:
+    - type: schedule
+      value: daily at 09:30 local time
+    - type: event
+      value: invoice becomes overdue
+    - type: event
+      value: customer replies to a reminder
+
+  permissions:
+    read: [Invoice, InvoiceLine, Customer, Payment]
+    write: [ReminderLog, InvoiceFollowUpStatus]
+    never: [Payment, Invoice, CreditNote]
+    external: "Send messages on the chosen channels, to invoice contacts only"
+
+  guardrails:
+    - Never state an amount that is not read directly from the invoice record.
+    - Never promise a discount, waiver, instalment plan or deadline extension. Escalate instead.
+    - Never contact a customer flagged on hold, in dispute, or listed in "never chase".
+    - Stop all follow-ups for an invoice the moment it is marked paid or cancelled.
+    - Maximum one message per customer per day across all channels and all invoices.
+    - If a customer asks to stop being contacted, stop immediately and tell the owner.
+    - If anything is ambiguous, do nothing and tell the owner.
+
+  tools_needed: [email, whatsapp, calendar]
+
+  playbook_md: |
+    ## Playbook
+
+    Every morning:
+    1. Pull every invoice that is unpaid or part-paid.
+    2. For each one, work out where it sits against the owner's chosen schedule
+       ({{options.schedule}}).
+    3. Skip anything paid, cancelled, on hold, in dispute, or in the owner's "never chase" list.
+    4. Skip any customer already contacted today.
+    5. For the rest, draft a message in the **{{options.tone}}** tone, on
+       {{options.channels}}, that says: what the invoice is for, the amount, the due date, and
+       how to pay.
+    6. Approval setting is **{{options.approval_before_send}}**. Follow it exactly.
+    7. Log every message sent in ReminderLog.
+
+    When a customer replies:
+    - Payment confirmation: check the payment record. If there is no payment, tell the owner.
+    - A question or a problem: do not answer it. Hand it to the owner with the full thread.
+    - A request to stop: stop and tell the owner.
+
+    Escalation: **{{options.escalate_to_human_after}}**. When escalating, give the owner the
+    invoice, the amount, the history of reminders sent, and any replies.
+
+    Owner's tone notes: {{free_text.tone_notes}}
+    Never chase: {{free_text.never_chase}}
+
+  acceptance:
+    - A test invoice past its due date produces exactly one reminder on the right day
+    - Marking the invoice paid stops all further reminders immediately
+    - A customer in the "never chase" list never receives a message
+    - A customer reply is escalated to the owner and does not get an automated answer
+    - No message ever contains an amount that differs from the invoice record
