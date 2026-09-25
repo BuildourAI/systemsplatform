@@ -39,8 +39,8 @@
   width: 1.7em;
   height: 1.7em;
   border-radius: 7px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--brand-ink);
   font-size: 0.7em;
   font-weight: 700;
   letter-spacing: 0;
@@ -88,8 +88,8 @@
   height: 1.4em;
   padding-inline: 0.35em;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--brand-ink);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   font-size: 0.85em;
@@ -109,10 +109,10 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(var(--accent-wash) 1px, transparent 1px),
-    linear-gradient(90deg, var(--accent-wash) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 20%, transparent 75%);
+  background-image: linear-gradient(var(--hero-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, #000 5%, transparent 70%);
   pointer-events: none;
 }
 
@@ -138,8 +138,8 @@
 }
 
 .hero__badge b {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--brand-ink);
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
   font-weight: 600;
@@ -152,7 +152,15 @@
 
 .hero h1 em {
   font-style: normal;
-  background: linear-gradient(transparent 74%, var(--accent) 74%, var(--accent) 96%, transparent 96%);
+  background: linear-gradient(
+    transparent 18%,
+    var(--brand-highlight) 18%,
+    var(--brand-highlight) 88%,
+    transparent 88%
+  );
+  padding-inline: 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .hero__lede {
@@ -371,8 +379,8 @@
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--brand);
+  color: var(--brand-ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -443,8 +451,8 @@
   align-items: flex-start;
   padding: 1rem;
   border-radius: var(--radius);
-  border: 1px solid var(--accent-strong);
-  background: var(--accent-wash);
+  border: 1px solid var(--brand-strong);
+  background: var(--brand-wash);
 }
 
 .template-card h3 {
@@ -508,8 +516,8 @@
 }
 
 .item-card[data-in-cart="true"] {
-  border-color: var(--ink);
-  background: var(--accent-wash);
+  border-color: var(--brand-action);
+  background: var(--brand-wash);
 }
 
 .item-card__top {
@@ -768,7 +776,7 @@
 
 .wizard__bar {
   height: 100%;
-  background: var(--accent);
+  background: var(--brand);
   transition: width 0.25s ease;
 }
 
@@ -886,7 +894,7 @@
   padding: 0.55rem 0.7rem;
   border-radius: var(--radius-sm);
   background: var(--ground-sunk);
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--brand);
 }
 
 .cart-empty {
@@ -923,8 +931,8 @@
 }
 
 .picker[aria-pressed="true"] {
-  border-color: var(--ink);
-  background: var(--accent-wash);
+  border-color: var(--brand-action);
+  background: var(--brand-wash);
 }
 
 .picker strong {
@@ -1073,8 +1081,8 @@
   align-items: flex-start;
   padding: 1.5rem;
   border-radius: var(--radius-lg);
-  background: var(--accent-wash);
-  border: 1px solid var(--accent-strong);
+  background: var(--brand-wash);
+  border: 1px solid var(--brand-strong);
   margin-bottom: 2.5rem;
 }
 
@@ -1177,14 +1185,14 @@
 
 .prototype-note {
   padding: 0.6rem var(--gutter);
-  background: var(--ink);
-  color: var(--ink-invert);
+  background: #1b1a16;
+  color: #faf8f2;
   font-size: var(--step--1);
   text-align: center;
 }
 
 .prototype-note b {
-  color: var(--accent);
+  color: #f4763d;
 }
 
 .rules > summary {

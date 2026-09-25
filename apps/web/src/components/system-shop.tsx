@@ -180,7 +180,12 @@ export function SystemShop({ system, groups }: { system: BusinessSystem; groups:
             </div>
           </>
         )}
-        <Link href="/cart" className="btn btn--primary btn--block">
+        {/* An empty cart is nothing to send someone to, so the loud button only
+            appears once there is something in it. */}
+        <Link
+          href="/cart"
+          className={`btn btn--block ${itemCount === 0 ? "btn--quiet" : "btn--primary"}`}
+        >
           {itemCount === 0 ? "See the cart" : "Review and finish"}
         </Link>
       </aside>

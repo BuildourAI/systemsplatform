@@ -21,8 +21,9 @@ Claude Code follows to build the real thing in the buyer's own environment.
 
 ## What we take from Zite (reference: zite.com)
 
-- The calm, confident visual language: cream background, yellow accents, serif headline, generous
-  whitespace.
+- The calm, confident visual language: cream background, generous whitespace, serif headline.
+  The accent is Buildour's own orange rather than the reference site's yellow. See
+  [docs/brand.md](../brand.md) for how it is set and why there are two oranges.
 - Product primitives on the front page: Apps, Databases, Workflows, Websites, Forms. Our shelves
   are organised the same way but sold as build specs.
 - "Solutions by use case" and "by industry" browsing.

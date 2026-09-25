@@ -1,10 +1,23 @@
 /* ============================================================
    Buildour Systems Platform — design tokens
 
-   Direction set by the reference site the client chose: a calm
-   cream ground, a single confident yellow, a serif that carries
-   the headlines. Yellow is always a FILL behind dark ink, never
-   ink itself — yellow text on cream fails contrast at any size.
+   Buildour's orange on the calm cream ground, with a serif
+   carrying the headlines.
+
+   The orange comes in two values, and the distinction matters:
+
+     --brand         the true logo orange. Used where nothing has
+                     to be read on top of it as small text: the
+                     mark, the highlight band, badges, the
+                     progress bar.
+     --brand-action  the same hue darkened until WHITE TEXT on it
+                     clears 4.5:1. Used for buttons and links.
+
+   Most brand oranges sit near 3:1 against white, which is not
+   readable. Rather than guess a darker shade, run
+   `node scripts/brand.mjs "#F26322"`: it derives every value
+   below and fails loudly if any text pair drops under the bar.
+   Swapping the brand orange means re-running it, not hand-editing.
    ============================================================ */
 
 :root {
@@ -22,13 +35,21 @@
   --ink-soft: #4d4a41;
   --ink-mute: #78736a;
   --ink-faint: #a09a8e;
+  --link: #c6511c;
   --ink-invert: #faf8f2;
 
-  /* The accent. One yellow, used sparingly and always behind ink. */
-  --accent: #f4c634;
-  --accent-strong: #e3b01b;
-  --accent-wash: #fdf4d6;
-  --accent-ink: #1b1a16;
+  /* Brand. PLACEHOLDER ORANGE — replace with Buildour's real hex and
+     re-run scripts/brand.mjs to regenerate the values below. */
+  --brand: #f26322;
+  --brand-strong: #d9551b;
+  --brand-wash: #f9e6d9;
+  --brand-ink: #1b1a16;
+  --brand-action: #c6511c;
+  --brand-action-hover: #a84316;
+  --brand-action-ink: #ffffff;
+  --brand-highlight: #f26322;
+  /* A hint of the brand behind the hero, not a drawn grid. */
+  --hero-grid: #f2e3d6;
 
   /* Lines */
   --line: #e4dfd2;
@@ -75,12 +96,18 @@
     --ink-soft: #ccc6b6;
     --ink-mute: #9c968a;
     --ink-faint: #736e64;
+    --link: #f4763d;
     --ink-invert: #16150f;
 
-    --accent: #f4c634;
-    --accent-strong: #ffd956;
-    --accent-wash: #332a11;
-    --accent-ink: #16150f;
+    --brand: #f4763d;
+    --brand-strong: #f68a58;
+    --brand-wash: #3e2312;
+    --brand-ink: #16150f;
+    --brand-action: #f26322;
+    --brand-action-hover: #f4763d;
+    --brand-action-ink: #16150f;
+    --brand-highlight: #ba4c1a;
+    --hero-grid: #241a13;
 
     --line: #332f26;
     --line-strong: #46412f;
@@ -110,12 +137,18 @@
   --ink-soft: #ccc6b6;
   --ink-mute: #9c968a;
   --ink-faint: #736e64;
+  --link: #f4763d;
   --ink-invert: #16150f;
 
-  --accent: #f4c634;
-  --accent-strong: #ffd956;
-  --accent-wash: #332a11;
-  --accent-ink: #16150f;
+  --brand: #f4763d;
+  --brand-strong: #f68a58;
+  --brand-wash: #3e2312;
+  --brand-ink: #16150f;
+  --brand-action: #f26322;
+  --brand-action-hover: #f4763d;
+  --brand-action-ink: #16150f;
+  --brand-highlight: #ba4c1a;
+  --hero-grid: #241a13;
 
   --line: #332f26;
   --line-strong: #46412f;
@@ -271,22 +304,36 @@ a {
   cursor: not-allowed;
 }
 
+/* The one loud button on a screen. Brand-action rather than --brand, because
+   its label has to be readable on top of the fill. */
 .btn--primary {
+  background: var(--brand-action);
+  color: var(--brand-action-ink);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--brand-action-hover);
+}
+
+/* A second-tier call to action. Never place one next to a primary button:
+   two orange buttons side by side tell the reader nothing about which to press. */
+.btn--accent {
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+.btn--accent:hover:not(:disabled) {
+  background: var(--brand-strong);
+}
+
+/* Near-black, for the rare action that must not compete with the brand. */
+.btn--ink {
   background: var(--ink);
   color: var(--ink-invert);
 }
 
-.btn--primary:hover:not(:disabled) {
+.btn--ink:hover:not(:disabled) {
   background: var(--ink-soft);
-}
-
-.btn--accent {
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-
-.btn--accent:hover:not(:disabled) {
-  background: var(--accent-strong);
 }
 
 .btn--quiet {
@@ -335,8 +382,8 @@ a {
 }
 
 .chip--accent {
-  background: var(--accent-wash);
-  border-color: var(--accent-strong);
+  background: var(--brand-wash);
+  border-color: var(--brand-strong);
   color: var(--ink);
 }
 
@@ -443,8 +490,8 @@ a {
 }
 
 .choice[data-selected="true"] {
-  border-color: var(--ink);
-  background: var(--accent-wash);
+  border-color: var(--brand-action);
+  background: var(--brand-wash);
 }
 
 .choice input {

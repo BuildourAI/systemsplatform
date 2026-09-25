@@ -49,7 +49,8 @@ Walk it: landing → a system → configure something → cart → review → do
 reminder teammate *without* Invoicing to see the dependency warning and its one-click fixes.
 
 Setting up hosting and the database for the first time:
-[docs/setup.md](docs/setup.md).
+[docs/setup.md](docs/setup.md). Changing the brand colour or logo:
+[docs/brand.md](docs/brand.md).
 
 ### Layout
 
