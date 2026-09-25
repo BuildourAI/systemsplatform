@@ -48,6 +48,9 @@ npm run build    # production build
 Walk it: landing → a system → configure something → cart → review → download. Add the invoice
 reminder teammate *without* Invoicing to see the dependency warning and its one-click fixes.
 
+Setting up hosting and the database for the first time:
+[docs/setup.md](docs/setup.md).
+
 ### Layout
 
 | Path | What it is |
